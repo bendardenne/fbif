@@ -11,6 +11,11 @@ def application(environ, start_response):
 
     query = environ['QUERY_STRING']
     query_t = parse_qs(query)
+
+    if 'type' in query_t:
+        valid_event_types = query_t['type']
+    else:
+        valid_event_types = ["TENTATIVE", "ACCEPTED"]
     
     try :
         url = unquote(query_t['url'][0]) 
@@ -28,7 +33,7 @@ def application(environ, start_response):
         output.add(k,v)
 
     # Filter
-    good_events = filter(lambda x: x['partstat'] in ["TENTATIVE", "ACCEPTED"], 
+    good_events = filter(lambda x: x['partstat'] in valid_event_types, 
         cal.walk("VEVENT"))
 
     for e in good_events:
